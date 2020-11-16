@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   Map.init({
     roomId: DataTypes.INTEGER,
     position: DataTypes.INTEGER,
-    element: DataTypes.STRING
+    element: DataTypes.INTEGER,
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Map',

@@ -15,6 +15,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       element: {
+        type: Sequelize.INTEGER
+      },
+      description: {
         type: Sequelize.STRING
       },
       createdAt: {
