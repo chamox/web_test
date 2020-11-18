@@ -2,15 +2,20 @@
 
 var session = require('koa-session');
 const Koa = require('koa');
+const cors = require('@koa/cors');
 const koaRouter = require('koa-router')
 const koaBody = require('koa-body');
 const routes = require('./routes');
+const errorHandler = require('./middleware/errorHandler');
+
 
 const app = new Koa();
 const router = new koaRouter()
 
 app.keys = ['Shh, its a secret!'];
+app.use(cors());
 app.use(session(app));
+app.use(errorHandler);
 
 const db = require('./models');
 
@@ -37,6 +42,7 @@ app.use(routes.routes());
 router.get('koala', '/', (ctx) => {
     ctx.body = "Welcome! To the Koala Book of Everything!"
   })
+
 
 router.get('koala', '/es', (ctx) => {
 ctx.body = "Bienvenido"

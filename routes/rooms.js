@@ -1,14 +1,15 @@
 const koaRouter = require('koa-router');
+const authenticated = require('../middleware/authenticated');
+
 const router = new koaRouter();
 
-// PONER AQUI LOS ROUTER.GET
-router.post('rooms.new', '/new', async(ctx) => {
+router.post('rooms.new', '/new', authenticated, async(ctx) => {
     const body = await ctx.request.body;
     const new_room = await ctx.db.Room.create(body);
     ctx.body = new_room;
 })
 
-router.get('rooms', '/', async(ctx) => {
+router.get('rooms', '/', authenticated, async(ctx) => {
     const rooms = await ctx.db.Room.findAll();
     ctx.body = rooms;
 })
