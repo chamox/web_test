@@ -14,6 +14,14 @@ const blankMap = () => {
     }
     return board
 }
+
+const canMove = (finalElement) => {
+    if (finalElement === 0){
+        return true
+    }else{
+        return false
+    }        
+}
   
 const getPlayerId = async(ctx, userEmail) => {
     const dbUser = await ctx.db.User.findOne({where: {email: userEmail}})
@@ -69,7 +77,7 @@ const setInitialMap = async (roomData, map, ctx) => {
 
 router.post('play.start', '/start', authenticated, async(ctx) => {
     const body = await ctx.request.body;
-    mapRoom = await ctx.db.Map.findOne({where: {roomId: body.room}})
+    const mapRoom = await ctx.db.Map.findOne({where: {roomId: body.room}})
     if(!mapRoom){
         let map = blankMap();
         let board = await setInitialMap(body, map, ctx);
@@ -88,7 +96,7 @@ router.post('play.start', '/start', authenticated, async(ctx) => {
 router.post('play.new', '/', authenticated, async(ctx) => {
     const body = await ctx.request.body;
     const token = await ctx.request.header.authorization;
-    decoded = jwt_decode(token.split(' ')[1]).sub;
+    let decoded = jwt_decode(token.split(' ')[1]).sub;
     console.log("request: ", decoded);
     let map = await ctx.db.Map.findAll({
         where: {roomId: body.room}
@@ -107,59 +115,48 @@ router.post('play.new', '/', authenticated, async(ctx) => {
     if(body.move === "Abajo"){
         new_position = position + 10;
     }
-    if(body.move === "Arriba"){
+    else if(body.move === "Arriba"){
         new_position = position - 10;
     }
-    if(body.move === "Derecha"){
+    else if(body.move === "Derecha"){
         new_position = position + 1;
     }
-    if(body.move === "Izquierda"){
+    else if(body.move === "Izquierda"){
         new_position = position - 1;
     }
-    if(body.move === "None"){
+    else if(body.move === "None"){
         console.log("none selected");
         new_position = position;
     }
 
-    // Ponemos el barco en la nueva posicion, modificando el elemento y la descripcion
-    await ctx.db.Map.update({element: 2}, {
-        where: {roomId: body.room, position: new_position}
-    });
+    // Acá obtenemos el element de new_position
+    let finalElement;
+    if(new_position >= 1 && new_position <= 100){
+        let getElementNew = await ctx.db.Map.findOne({where: {position: new_position}});
+        finalElement = getElementNew.dataValues.element;
 
-    await ctx.db.Map.update({description: decoded}, {
-        where: {roomId: body.room, position: new_position}
-    });
-
-    // Sacamos el barco de la antigua posicion, cambiando su elemento a Sea (0).
-    await ctx.db.Map.update({element: 0}, {
-        where: {roomId: body.room, position: position}
-    });
-
-
-    // const new_play = await ctx.db.Play.create(body);
-
-    // validar jugada 
-    // verifyMap(decoded, user_position.dataValues.position, body.room, body.move, map)
-    // ctx.body = new_play;
-})
-
-// const verifyMap = async (userId, position, room, movement, map) => {
+    }else{
+        finalElement = -1
+    }
     
-//     console.log("position: ", position)
-//     console.log("room: ", room);
-//     console.log("movement: ", movement);
-//     console.log("user id: ", userId);
-    // if( position === 1 ){
-    //     // Revisar abajo y derecha
-    // }else if( position ===  10){
-    //     // Revisar abajo e izquierda 
-    // }else if(position === 91){
-    //     // Revisar arriba derecha
-    // }else if(position === 100){
-    //     // Revusar arriba izquierda
-    // }else if(position%10 === 0){
-    //     // revisar izquierda, arriba, abajo
-    // }else if(position%)
+    if (canMove(finalElement)){
+        
+        // Ponemos el barco en la nueva posicion, modificando el elemento y la descripcion
+        await ctx.db.Map.update({element: 2}, {
+            where: {roomId: body.room, position: new_position}
+        });
+
+        await ctx.db.Map.update({description: decoded}, {
+            where: {roomId: body.room, position: new_position}
+        });
+
+        // Sacamos el barco de la antigua posicion, cambiando su elemento a Sea (0).
+        await ctx.db.Map.update({element: 0}, {
+            where: {roomId: body.room, position: position}
+        });
+
+    }
+})
 
 
 
