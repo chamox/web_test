@@ -17,7 +17,7 @@ module.exports = {
       roomId: 1,
       position: 2,
       element: 2, 
-      description: '1', 
+      description: '21', 
       createdAt: new Date(),
       updatedAt: new Date(),
     });

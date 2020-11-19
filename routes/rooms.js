@@ -9,6 +9,10 @@ router.post('rooms.new', '/new', authenticated, async(ctx) => {
     ctx.body = new_room;
 })
 
+// router.post('rooms.join', '/join', authenticated, async(ctx) => ){
+
+// }
+
 router.get('rooms', '/', authenticated, async(ctx) => {
     const rooms = await ctx.db.Room.findAll();
     ctx.body = rooms;
