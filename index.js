@@ -19,7 +19,7 @@ app.use(errorHandler);
 
 const db = require('./models');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 db.sequelize
   .authenticate()
